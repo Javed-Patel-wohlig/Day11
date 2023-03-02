@@ -10,7 +10,7 @@ createCustomer = async (req, res) => {
 
     let customer = new Customer(req.body);
     customer = await customer.save();
-    res.status(200).send({message: "Created Customer successfully"});
+    res.status(200).send({message: "Customer Created successfully"});
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
