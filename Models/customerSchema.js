@@ -44,7 +44,6 @@ const customerSchema = new mongoose.Schema({
       required: true,
   },
 
-  order: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }]
 },{timestamps: true});
 
 module.exports = mongoose.model('Customer', customerSchema);
