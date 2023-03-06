@@ -1,5 +1,6 @@
 const Order = require("../../Models/orderSchemas");
 const Payment = require("../../Models/paymentSchemas");
+const Product = require("../../Models/productSchemas");
 const _ = require("lodash");
 
 order_payment = async (req, res) => {
@@ -28,12 +29,20 @@ order_payment = async (req, res) => {
     //     message: `Quantity updated to ${newQuantity}`,
     //   });
     // }
+    const product_info = await Product.findById({ _id: req.body.product });
 
-    let one = Number(req.body.amount);
-    let two = Number(req.body.tax);
-    let total = one + two;
+    let size =  product_info.size
+    let colors = product_info.colors
+    let amount = product_info.price
 
-    req.body.total = Number(total);
+    req.body.size = size;
+    req.body.colors = colors;
+    req.body.amount = amount;
+
+    if (req.body.quantity > 1){
+      req.body.amount = amount * req.body.quantity;
+      req.body.total = total * req.body.total;
+    }
 
     let order = new Order(_.pick(req.body, ["customer", "product", "o_date_time","deliveryStatus","quantity","colors","size","amount","tax","total"]));
     let payment = new Payment(_.pick(req.body, ["amount","pay_type","pay_status","customer","o_date_time","tax","total"]));
@@ -47,10 +56,10 @@ order_payment = async (req, res) => {
     order = await order.save();
     
     console.log(order, payment);
-    res.send({ order, payment });
+    res.status(200).send({ order, payment });
     
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).send({ message: err.message });
   }
 };
 

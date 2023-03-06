@@ -13,8 +13,7 @@ const orderSchema = new mongoose.Schema({
     default: Date.now,
   },
   deliveryStatus: {
-    type: Boolean,
-    default: false,
+    type: String,
     required: true,
   },
   quantity: {

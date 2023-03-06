@@ -9,13 +9,14 @@ product_pagination = async (req, res) => {
     const pipeline = [
       { $skip: skip },
       { $limit: limit },
-      { $project: { name: 1, _id: 0 } },
+      { $project: { name: 1, _id: 0 } }
     ];
 
     const products = await Product.aggregate(pipeline);
 
     res.status(200).send({
       message: "Products fetched successfully",
+      count: products[0].count,
       data: products,
     });
   } catch (err) {

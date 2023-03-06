@@ -19,9 +19,10 @@ const product_update_router = require("./Routes/Product_info/updateProduct");
 const product_delete_router = require("./Routes/Product_info/deleteProduct");
 const product_populate_router = require("./Routes/Product_info/populate");
 const product_pagination_aggregate_router = require('./Routes/Aggregate/product_pagination')
-const product_lastEntry_router = require('./Routes/Aggregate/lastEntry')
 
 const order_payment_router = require("./Routes/Order/order_payment");
+const product_lastEntry_router = require('./Routes/Aggregate/lastEntry')
+const product_checkStatus_router = require('./Routes/Aggregate/pay_status')
 
 const recursive1_router = require("./Routes/Recursion/recursive1");
 const recursive2_router = require("./Routes/Recursion/recursive2");
@@ -51,12 +52,14 @@ app.use("/product/update", product_update_router);
 app.use("/product/delete", product_delete_router);
 app.use("/product/populate", product_populate_router);
 app.use("/product/aggregate/pagination",product_pagination_aggregate_router);
-app.use("/product/aggregate/lastEntry", product_lastEntry_router);
 
 app.use("/recursive1", recursive1_router);
 app.use("/recursive2", recursive2_router);
 app.use("/recursive3", recursive3_router);
 
 app.use("/order&payment", order_payment_router);
+app.use("/order/aggregate/lastEntry", product_lastEntry_router);
+app.use("/order/aggregate/checkStatus", product_checkStatus_router);
+
 
 app.listen(port, () => console.log(`Server is running on ${port}........ `));

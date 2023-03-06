@@ -1,5 +1,4 @@
 const Order = require("../../Models/orderSchemas");
-const mongoose = require("../../Config/config");
 
 lastEntry = async (req, res) => {
   try {

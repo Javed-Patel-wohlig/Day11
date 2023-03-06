@@ -13,8 +13,7 @@ const paymentSchema = new mongoose.Schema({
         required: true,
     },
     pay_status:{
-        type: Boolean,
-        default: false,
+        type: String,
         required: true,
     },
     order:{type: mongoose.Schema.Types.ObjectId, ref: Order},
