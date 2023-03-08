@@ -11,30 +11,27 @@ checkStatus = async (req, res) => {
               as: "payment_info"
             }
           },
-          {$unwind: '$payment_info'},
-          {                    
+          {
             $addFields: {
               paid_amount: {
-                $cond: [
-                  { $eq: ["$payment_info.pay_status", "Paid"] },
-                  "$payment_info.total" ,
-                   0
-                ]
+                $sum: "$payment_info.paid_now"
               },
               pending_amount: {
-                $cond: [
-                  {$eq: ["$payment_info.pay_status", "Paid"] },
-                   0,
-                  "$payment_info.total"
-                ]
+              
+                 $subtract: ["$total", { $sum: "$payment_info.paid_now" }] 
+                
+              }
             }
-          }
-          },          
+          },
           {
             $project: {
               _id: 0,
               customer: 1,
-              pay_status: "$payment_info.pay_status" ,
+              pay_status: { $cond : {
+                if:{$eq : ['$pending_amount',0]},
+                then: 'paid',
+                else: 'pending'
+              }},
               paid_amount: 1,
               pending_amount: 1,
               total_amount: "$total"
@@ -46,7 +43,7 @@ checkStatus = async (req, res) => {
               count: { $sum: 1 },
               total_paid: { $sum: "$paid_amount" },
               total_pending: { $sum: "$pending_amount" },
-              total_amount: { $sum: "$total_amount" },
+              total_amount: { $sum: "$total" },
               orders: { $push: "$$ROOT" },
               
             },

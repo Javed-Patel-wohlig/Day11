@@ -7,25 +7,16 @@ product_pagination = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const pipeline = [
-      {
-        $facet: {
-          data: [
-            { $skip: skip },
-            { $limit: limit },
-            { $project: { name: 1, _id: 0 } },
-          ],
-          total: [{ $count: "total" }],
-        },
-      },
+      { $skip: skip },
+      { $limit: limit },
+      { $project: { name: 1, _id: 0 } }
     ];
 
-    const result = await Product.aggregate(pipeline);
-    const products = result[0].data;
-    const total = result[0].total[0].total;
+    const products = await Product.aggregate(pipeline);
 
     res.status(200).send({
       message: "Products fetched successfully",
-      total: total,
+      count: await Product.aggregate([{$count: 'total'}]),
       data: products,
     });
   } catch (err) {

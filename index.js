@@ -10,7 +10,6 @@ const customer_search_router = require("./Routes/Customer_info/searchCustomer");
 const customer_many_router = require("./Routes/Customer_info/manyCustomer");
 const customer_keyword_pagination = require("./Routes/Customer_info/pagination_search_customer");
 const customer_pagination_router = require("./Routes/Customer_info/pagination");
-const customer_find_aggregate_router = require("./Routes/Aggregate/customerFind");
 
 const product_create_router = require("./Routes/Product_info/createProduct");
 const product_read_router = require("./Routes/Product_info/readProduct");
@@ -18,11 +17,14 @@ const product_read_one_router = require("./Routes/Product_info/getOneProduct");
 const product_update_router = require("./Routes/Product_info/updateProduct");
 const product_delete_router = require("./Routes/Product_info/deleteProduct");
 const product_populate_router = require("./Routes/Product_info/populate");
-const product_pagination_aggregate_router = require('./Routes/Aggregate/product_pagination')
 
 const order_payment_router = require("./Routes/Order/order_payment");
+
+const customer_find_aggregate_router = require("./Routes/Aggregate/customerFind");
+const product_pagination_aggregate_router = require('./Routes/Aggregate/product_pagination')
 const product_lastEntry_router = require('./Routes/Aggregate/lastEntry')
 const product_checkStatus_router = require('./Routes/Aggregate/pay_status')
+const customer_checkStatus_router = require('./Routes/Aggregate/customer_order')
 
 const recursive1_router = require("./Routes/Recursion/recursive1");
 const recursive2_router = require("./Routes/Recursion/recursive2");
@@ -43,7 +45,6 @@ app.use("/customer/search", customer_search_router);
 app.use("/manyCustomer", customer_many_router);
 app.use("/customer/pagination", customer_pagination_router);
 app.use("/customer-search-pagination", customer_keyword_pagination);
-app.use("/customer/aggregate/find", customer_find_aggregate_router);
 
 app.use("/product/create", product_create_router);
 app.use("/product/read", product_read_router);
@@ -51,15 +52,18 @@ app.use("/product/read-one", product_read_one_router);
 app.use("/product/update", product_update_router);
 app.use("/product/delete", product_delete_router);
 app.use("/product/populate", product_populate_router);
-app.use("/product/aggregate/pagination",product_pagination_aggregate_router);
 
 app.use("/recursive1", recursive1_router);
 app.use("/recursive2", recursive2_router);
 app.use("/recursive3", recursive3_router);
 
 app.use("/order&payment", order_payment_router);
+
+app.use("/customer/aggregate/find", customer_find_aggregate_router);
+app.use("/product/aggregate/pagination",product_pagination_aggregate_router);
 app.use("/order/aggregate/lastEntry", product_lastEntry_router);
 app.use("/order/aggregate/checkStatus", product_checkStatus_router);
+app.use("/order/aggregate/customer-order", customer_checkStatus_router);
 
 
 app.listen(port, () => console.log(`Server is running on ${port}........ `));

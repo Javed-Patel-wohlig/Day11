@@ -2,7 +2,7 @@ const Order = require("../../Models/orderSchemas");
 
 lastEntry = async (req, res) => {
   try {
-    const pipeline = [
+     const pipeline = [
       // Group orders by customer
       { $group: { _id: "$customer", latest_order: { $max: "$o_date_time" } } },
       // Sort orders by date in descending order to get latest order
