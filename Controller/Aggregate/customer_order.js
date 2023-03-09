@@ -3,61 +3,84 @@ const Order = require("../../Models/orderSchemas");
 checkStatus = async (req, res) => {
   try {
     const pipeline = [
-        {
-          $lookup: {
-            from: "payments",
-            localField: "pay",
-            foreignField: "_id",
-            as: "payment_info",
-          },
+      {
+        $lookup: {
+          from: "payments",
+          localField: "pay",
+          foreignField: "_id",
+          as: "payment_info",
         },
-        {
-          $project: {
-            customer: 1,
-            total: 1,
-            paid_amount: {
-              $cond: {
-                if: { $eq: ["$payment_info.pay_status", "Paid"] },
-                then: { $sum: "$payment_info.total" },
-                else: 0,
-              },
-            },
-            pending_amount: {
-              $cond: {
-                if: { $eq: ["$payment_info.pay_status", "Paid"] },
-                then: 0,
-                else: { $sum: "$payment_info.total" },
-              },
+      },  
+      {$unwind:'$payment_info'},
+      {
+        $group: {
+          _id: "$customer",
+          total_amount: { $sum: "$total" },
+          paid_total: {
+            $sum: {
+              $cond: [
+                { $eq: ["$payment_info.pay_status", "Paid"] },
+                "$payment_info.total",
+                0,
+              ],
             },
           },
-        },
-        {
-          $group: {
-            _id: "$customer",
-            paid_amount: { $sum: "$paid_amount" },
-            pending_amount: { $sum: "$pending_amount" },
-            total_amount: { $sum: "$total" },
-            pay_status: {
-              $cond: {
-                if: { $eq: ["$pending_amount", 0] },
-                then: "paid",
-                else: "pending",
-              },
+          paid_ordercount: {
+            $sum: {
+              $cond: [
+                { $eq: ["$payment_info.pay_status", "Paid"] },
+                1,
+                0,
+              ],
+            },
+          },
+          unpaid_total: {
+            $sum: {
+              $cond: [
+                { $eq: ["$payment_info.pay_status", "Unpaid"] },
+                "$payment_info.total",
+                0,
+              ],
+            },
+          },
+          unpaid_ordercount: {
+            $sum: {
+              $cond: [                                                                                                                                            
+                { $eq: ["$payment_info.pay_status", "Unpaid"] },
+                1,
+                0,
+              ],
+            },
+          },
+        },   
+      },
+      {
+        $project: {
+          customer: "$_id",
+          _id: 0,
+          paid: {
+            total: "$paid_total",
+            status: "paid",
+            ordercount: "$paid_ordercount",
+          },
+          unpaid: {
+            total: "$unpaid_total",
+            status: "pending",
+            ordercount: "$unpaid_ordercount",
+          },
+          total_amount: 1,
+          pay_status: {
+            $cond: {
+              if: { $eq: ["$unpaid_total", 0] },
+              then: "paid",
+              else: "pending",
             },
           },
         },
-        {
-          $project: {
-            _id: 0,
-            customer: "$_id",
-            paid_amount: 1,
-            pending_amount: 1,
-            total_amount: 1,
-            pay_status: 1,
-          },
-        },
-      ];
-      
+      },
+    ];
+    
+    
 
     const result = await Order.aggregate(pipeline);
     const count = result.length;
